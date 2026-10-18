@@ -50,4 +50,9 @@ public function isStaff(): bool
 {
     return $this->role === 'staff';
 }
+
+public function isSuperAdmin(): bool
+{
+    return strtolower($this->email) === 'mondaysariye1@gmail.com';
+}
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\VehicleRequestController;
 use App\Models\Dealer;
 use App\Models\Vehicle;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserManagementController;
 
 
 /*
@@ -60,6 +61,36 @@ Route::get(
 */
 
 Route::middleware('auth')->group(function () {
+    Route::get('/admin/users', [UserManagementController::class, 'index'])
+        ->name('admin.users');
+
+    Route::patch('/admin/users/{user}/role', [UserManagementController::class, 'updateRole'])
+        ->name('admin.users.role');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ROLE DASHBOARDS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/admin/super', function () {
+        abort_unless(auth()->user()->isSuperAdmin(), 403);
+        return view('admin.super');
+    })->name('admin.super');
+
+    Route::get('/admin', function () {
+        abort_unless(
+            auth()->user()->hasRole('admin') &&
+            !auth()->user()->isSuperAdmin(),
+            403
+        );
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+
+    Route::get('/staff', function () {
+        abort_unless(auth()->user()->hasRole('staff'), 403);
+        return view('staff.dashboard');
+    })->name('staff.dashboard');
 
     /*
     |--------------------------------------------------------------------------
